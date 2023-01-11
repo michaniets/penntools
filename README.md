@@ -19,7 +19,9 @@ Example:
     > cut -f2 tmp-penntools-nodes | cmd/my-rnn.sh > tmp-tagged
 - Join node number file with tagger output.
     > paste tmp-penntools-nodes tmp-rnn-tagged |cut -f1,3- > tmp-penntools-merge 
+
   This will create 4 columns, e.g.: #14	ad VERcjg avoir
+
 - Merge annotation with psd file 
     > penntools.py -m tmp-penntools-merge tmp-penntools-FILE.psd
 
