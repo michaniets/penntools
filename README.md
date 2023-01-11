@@ -7,7 +7,7 @@ Converts Penn tree structures to 1 word per line format, for further processing.
 - If Penn terminal nodes contain lemmas appended with @l=, they will be printed, else 'NA'.
 - standard output is 3 tab-delimited columns (word-pos-lemma), with special codes wrapped in XML codes
   - use -c to change number of output columns
-3 temporary files are written:
+- 3 temporary files are written:
   - tmp-penntools-nodes   numbered words
   - tmp-penntools-tagme   words only (input to tagger)
   - tmp-<psd file>        copy of psd file with numbered terminal nodes, e.g. (pos word)#123 
