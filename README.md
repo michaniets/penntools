@@ -1,5 +1,7 @@
 # penntools: annotation and coding queries for Penn historical corpora
 
+## penn-coding.py
+
 - Task: Extract tabular information about verbal argument structures.
 - Method: CorpusSearch codin query + conversion to table
 - Corpora: Penn historical copora
@@ -15,12 +17,12 @@
   - for Middle English: working, with Options '-C me -l l -c
     'V.*''. Verification needed. See versions and bugs below.
 
-## MCVF-PPCHF
+### MCVF-PPCHF
 
 The original corpus distribution was further annotated using lemmatizers and taggers.
 Latest version: RNN lemmatizer and Tagger (Schmid 2019).
 
-### Files
+#### Files
 
 CorpusSearch (CS):
 
@@ -31,7 +33,7 @@ Script
 
 - penn-coding.py
 
-### Processing
+#### Processing
 
 
 ```cat *.psd > all.psd    # concatenate to avoid arbitrary order of files```
@@ -44,7 +46,7 @@ Script
 
 
 
-### Annotation
+#### Annotation
 
 The CS query is composed of several conditions.
 For each condition, CS annotates an attribute-value pair to the specified node (IP*).
@@ -86,7 +88,7 @@ Attributes fromt the CS query:
 - year: the date of each text, clumsily inserted by a matching the ID annotation
 
 
-### Conversion to table
+#### Conversion to table
 
 Python script penn-coding.py converts CorpusSearch coded output (cod) to table (csv)
 
@@ -124,7 +126,7 @@ attributes of the CorpusSearch query:
     (_he is and was never called..._)
 
 
-### History
+#### History
 
 **Next:**
 
@@ -151,7 +153,7 @@ mcvf-coding.pl
 
 - extracts "CODING" based on indentation level.
 
-## Middle English corpora
+### Middle English corpora
 
 tested with these options:
 
@@ -160,7 +162,7 @@ tested with these options:
 Corpus selection 'me' sets retrieved verbs to:
 > ^(NEG\+)?(VB|MD|DA|DO|HA|HV|BE).*"
 
-### History
+#### History
 
 **Next:**
 
@@ -170,7 +172,6 @@ Bug: upenn-coding.pl retrieves more verbs than penn-coding.py. CHECK!
    26303
 > achim@merlot v16-16dec22 % awk -F'\t' '$6 ~ /V.*/ ' pcmep.csv |wc -l 
    25501
-
 
 Functions:
 
