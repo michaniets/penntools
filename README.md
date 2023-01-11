@@ -10,6 +10,17 @@ Converts Penn tree structures to 1 word per line format, for further processing.
   - tmp-penntools-nodes   numbered words
   - tmp-penntools-tagme   words only (input to tagger)
   - tmp-<psd file>        copy of psd file with numbered terminal nodes, e.g. (pos word)#123 
+	
+Example:
+- Extract words (terminal nodes) from Penn psd file:
+    > "%(prog)s -c 1 FILE.psd > 1100-roland-mcvf.tagged
+- Run tagger (any tagger, output needs to be one word per line, tab-delimited  (word-pos-lemma), e.g.
+    > cut -f2 tmp-penntools-nodes | cmd/my-rnn.sh > tmp-tagged
+- Join node number file with tagger output.
+    > paste tmp-penntools-nodes tmp-rnn-tagged |cut -f1,3- > tmp-penntools-merge 
+  This will create 4 columns, e.g.: #14	ad VERcjg avoir
+- Merge annotation with psd file 
+    > penntools.py -m tmp-penntools-merge tmp-penntools-FILE.psd
 
 ## penn-coding.py
 
