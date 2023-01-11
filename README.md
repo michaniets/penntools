@@ -13,7 +13,7 @@ Converts Penn tree structures to 1 word per line format, for further processing.
 	
 Example:
 - Extract words (terminal nodes) from Penn psd file:
-    > "%(prog)s -c 1 FILE.psd > 1100-roland-mcvf.tagged
+    > "penntools.py -c 1 FILE.psd > 1100-roland-mcvf.tagged
 - Run tagger (any tagger, output needs to be one word per line, tab-delimited  (word-pos-lemma), e.g.
     > cut -f2 tmp-penntools-nodes | cmd/my-rnn.sh > tmp-tagged
 - Join node number file with tagger output.
