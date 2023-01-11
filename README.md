@@ -10,7 +10,7 @@ Converts Penn tree structures to 1 word per line format, for further processing.
 - 3 temporary files are written:
   - tmp-penntools-nodes   numbered words
   - tmp-penntools-tagme   words only (input to tagger)
-  - tmp-<psd file>        copy of psd file with numbered terminal nodes, e.g. (pos word)#123 
+  - tmp-&lt;psd file>        copy of psd file with numbered terminal nodes, e.g. (pos word)#123 
 	
 Example:
 - Extract words (terminal nodes) from Penn psd file:
