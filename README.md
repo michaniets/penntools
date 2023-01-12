@@ -14,7 +14,7 @@ Converts Penn tree structures to 1 word per line format, for further processing.
 	
 ### Use penntools.py for tagging psd files with penntools.sh
 
-> penntools.sh <psd file> <tagger script>
+> penntools.sh psd_file tagger_script
 
 penntools.sh will:
 - extract words (terminal nodes) from Penn psd file (penntools.py -c ...)
@@ -23,6 +23,7 @@ penntools.sh will:
   This will create 4 columns, e.g.: #14	ad VERcjg avoir
 - merge annotation with psd file (penntools.py -m ...)
 - store output in a subfolder
+
 ## penn-coding.py
 
 - Task: Extract tabular information about verbal argument structures.
