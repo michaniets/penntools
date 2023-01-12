@@ -7,8 +7,7 @@ For results see <https://github.com/ILR-Stuttgart/mcvf-ppchf>
 
 Converts Penn tree structures to 1 word per line format, for further processing.
 
-- If Penn terminal nodes contain
-<s> lemmas appended with @l=, they will be printed, else 'NA'.
+- If Penn terminal nodes contain lemmas appended with @l=, they will be printed, else 'NA'.
 - standard output is 3 tab-delimited columns (word-pos-lemma), with special codes wrapped in XML codes
   - use -c to change number of output columns
 - 3 temporary files are written:
