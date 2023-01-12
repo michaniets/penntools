@@ -10,21 +10,19 @@ Converts Penn tree structures to 1 word per line format, for further processing.
 - 3 temporary files are written:
   - tmp-penntools-nodes   numbered words
   - tmp-penntools-tagme   words only (input to tagger)
-  - tmp-&lt;psd file>        copy of psd file with numbered terminal nodes, e.g. (pos word)#123 
+  - tmp-&lt;psd file&gt;      copy of psd file with numbered terminal nodes, e.g. (pos word)#123 
 	
-Example:
-- Extract words (terminal nodes) from Penn psd file:
-    > "penntools.py -c 1 FILE.psd > 1100-roland-mcvf.tagged
-- Run tagger (any tagger, output needs to be one word per line, tab-delimited  (word-pos-lemma), e.g.
-    > cut -f2 tmp-penntools-nodes | cmd/my-rnn.sh > tmp-tagged
-- Join node number file with tagger output.
-    > paste tmp-penntools-nodes tmp-rnn-tagged |cut -f1,3- > tmp-penntools-merge 
+### Use penntools.py for tagging psd files with penntools.sh
 
+> penntools.sh <psd file> <tagger script>
+
+penntools.sh will:
+- extract words (terminal nodes) from Penn psd file (penntools.py -c ...)
+- run tagger on the extracted file (the script is configured for RNN Tagger)
+- merge (unix _paste_) node number file with tagger output.
   This will create 4 columns, e.g.: #14	ad VERcjg avoir
-
-- Merge annotation with psd file 
-    > penntools.py -m tmp-penntools-merge tmp-penntools-FILE.psd
-
+- merge annotation with psd file (penntools.py -m ...)
+- store output in a subfolder
 ## penn-coding.py
 
 - Task: Extract tabular information about verbal argument structures.
