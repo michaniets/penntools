@@ -192,10 +192,12 @@ Corpus selection 'me' sets retrieved verbs to:
 
 Bug: upenn-coding.pl retrieves more verbs than penn-coding.py. CHECK!
 
-```awk -F'\t' '$3 ~ /V.*/' pcmep-perl.csv |wc -l
+```
+awk -F'\t' '$3 ~ /V.*/' pcmep-perl.csv |wc -l
    26303
 awk -F'\t' '$6 ~ /V.*/ ' pcmep.csv |wc -l
-   25501 ```
+25501
+```
 
 Functions:
 
