@@ -14,7 +14,7 @@ Converts Penn tree structures to 1 word per line format, for further processing.
 	
 ### Use penntools.py for tagging psd files with penntools.sh
 
-> penntools.sh psd_file tagger_script
+```penntools.sh <psd_file> <tagger_script>```
 
 penntools.sh will:
 - extract words (terminal nodes) from Penn psd file (penntools.py -c ...)
@@ -181,10 +181,10 @@ mcvf-coding.pl
 
 tested with these options:
 
-> penn-coding.py -C me -H -l l temp.cod > temp.csv
+```penn-coding.py -C me -H -l l temp.cod > temp.csv```
 
 Corpus selection 'me' sets retrieved verbs to:
-> ^(NEG\+)?(VB|MD|DA|DO|HA|HV|BE).*"
+```^(NEG\+)?(VB|MD|DA|DO|HA|HV|BE).*"```
 
 #### History
 
@@ -192,10 +192,10 @@ Corpus selection 'me' sets retrieved verbs to:
 
 Bug: upenn-coding.pl retrieves more verbs than penn-coding.py. CHECK!
 
-> achim@merlot v16-16dec22 % awk -F'\t' '$3 ~ /V.*/' pcmep-perl.csv |wc -l
+```awk -F'\t' '$3 ~ /V.*/' pcmep-perl.csv |wc -l
    26303
-> achim@merlot v16-16dec22 % awk -F'\t' '$6 ~ /V.*/ ' pcmep.csv |wc -l 
-   25501
+awk -F'\t' '$6 ~ /V.*/ ' pcmep.csv |wc -l
+   25501 ```
 
 Functions:
 
