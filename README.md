@@ -1,10 +1,14 @@
-# penntools: annotation and coding queries for Penn historical corpora
+# penntools:
+
+Annotation and coding queries for Penn historical corpora.
+For results see <https://github.com/ILR-Stuttgart/mcvf-ppchf>
 
 ## penntools.py
 
 Converts Penn tree structures to 1 word per line format, for further processing.
 
-- If Penn terminal nodes contain lemmas appended with @l=, they will be printed, else 'NA'.
+- If Penn terminal nodes contain
+<s> lemmas appended with @l=, they will be printed, else 'NA'.
 - standard output is 3 tab-delimited columns (word-pos-lemma), with special codes wrapped in XML codes
   - use -c to change number of output columns
 - 3 temporary files are written:
@@ -196,7 +200,7 @@ Bug: upenn-coding.pl retrieves more verbs than penn-coding.py. CHECK!
 awk -F'\t' '$3 ~ /V.*/' pcmep-perl.csv |wc -l
    26303
 awk -F'\t' '$6 ~ /V.*/ ' pcmep.csv |wc -l
-25501
+   25501
 ```
 
 Functions:
