@@ -193,19 +193,14 @@ Corpus selection 'me' sets retrieved verbs to:
 
 **Next:**
 
-Bug: upenn-coding.pl retrieves more verbs than penn-coding.py. CHECK!
-
-```
-awk -F'\t' '$3 ~ /V.*/' pcmep-perl.csv |wc -l
-   26303
-awk -F'\t' '$6 ~ /V.*/ ' pcmep.csv |wc -l
-   25501
-```
-
 Functions:
 
 - include alternative Lemmas
 
 **Latest:**
+
+Version 1.3 13.1.23: bug fix in regex reVerbPOS
+
+**Previous:**
 
 Version 1.2 24.12.22: first Python implementation, based on Perl upenn-coding.pl

@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
 __author__ = "Achim Stein"
-__version__ = "1.2"
+__version__ = "1.3"
 __email__ = "achim.stein@ling.uni-stuttgart.de"
-__status__ = "24.12.22"
+__status__ = "13.1.23"
 __license__ = "GPL"
 
 import sys
@@ -85,7 +85,7 @@ def main(args):
     corpusName = args.corpus  # parametrize for different Penn corpora
     if re.search(r'(me|english|ppcme|pcmep|plaeme)', corpusName, re.IGNORECASE):
       htmlDir = "penn-html"
-      reVerbPOS = '^(NEG\+)?(VB|MD|DA|DO|HA|HV|BE).*'
+      reVerbPOS = '^(NEG\+)?(VA|VB|MD|DA|DO|HA|HV|BE).*'
       reCoordPOS='V.*',   # TODO setting it here doesn't seem to work. Use -c
     elif re.search(r'(pceec)', corpusName, re.IGNORECASE):
       htmlDir = "pceec"
