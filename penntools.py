@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 __author__ = "Achim Stein"
-__version__ = "1.3"
+__version__ = "1.4"
 __email__ = "achim.stein@ling.uni-stuttgart.de"
 __status__ = "running"
 __license__ = "GPL"
@@ -197,7 +197,7 @@ def mergeAnnotation():
     args = get_arguments()   # get command line options
     merge = open(args.merge, 'r')
     nrAnnot = {}  # build a dictionary with tagger annotation 
-    for row in csv.reader(merge, delimiter ='\t', quotechar='\\'):   # TODO how disable quoting correctly?
+    for row in csv.reader(merge, delimiter ='\t', quoting=csv.QUOTE_NONE):
         if any(row):   # avoid errors with empty lines
             if len(row) == 4:
                 if re.search(r'[<>\(\)]', row[3]):
