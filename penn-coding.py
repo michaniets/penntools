@@ -360,7 +360,14 @@ def replaceAmalgamated(s):
 
 if __name__ == "__main__":
 
-   parser = argparse.ArgumentParser(description='Process output of CorpusSearch coding queries.')
+   parser = argparse.ArgumentParser(
+       description='''
+Process output of CorpusSearch coding queries.
+Examples:
+- For MCVF corpus using lemma after '@rl=':
+  penn-coding.py -H -l rl mcvf-ppchf-coding.cod > mcvf-ppchf-coding.csv
+''', formatter_class = argparse.RawTextHelpFormatter   # allows triple quoting for multiple-line text
+       )
 
    parser.add_argument('cod_file', type=str,
                        help='CorpusSearch cod file')
