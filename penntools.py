@@ -369,25 +369,17 @@ def tempFunction(sentences):     #  clean XML values
     wErr.close()
     return()
 
-# -r repair
+# -r repair:  add missing annotation @l= @t= 
 def repair():
     args = get_arguments()   # get command line options
     psdFile = read_file(args.file_name)
     sentences = psdFile.split('\n\n')
-    sNr = 0
-    code = id = ''
-    wCount = count(0)   # counter for words
     reWord = re.compile('\(([A-Z][^ \)]*? [^ \)]+?)\)', re.DOTALL)
-    reLGERM = re.compile('.*@l=[^@]+\w+@t=[^@]+.*')  # lemma and tag
-    reRNN = re.compile('.*\w+@lr=[^@]+\w+@tr=[^@]+.*')  # lemma and tag
     reLGERM = re.compile('.*@l=.*@t=.*')  # lemma and tag
     reRNN = re.compile('.*@rl=.*@rt=.*')  # lemma and tag
-    # first parse: get maximum annotation string
     addL = 0
     addR = 0
-    # second parse: add missing annotation @l= @t= 
     for s in sentences:
-        sNr += 1
         for w in re.findall(reWord, s):
             if (not re.match(reLGERM, w)) and re.match(reRNN, w):
                 wNew = re.sub(r'@rl=', '@l=NA@t=NA@rl=', w)    # add missing lgerm annotation
