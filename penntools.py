@@ -391,11 +391,11 @@ def repair():
         for w in re.findall(reWord, s):
             if (not re.match(reLGERM, w)) and re.match(reRNN, w):
                 wNew = re.sub(r'@rl=', '@l=NA@t=NA@rl=', w)    # add missing lgerm annotation
-                s = re.sub(w, wNew, s)
+                s = re.sub(re.escape(w), wNew, s)  # escape needed: there may be special chars in the strings
                 addL += 1
             elif re.match(reLGERM, w) and (not re.match(reRNN, w)):
                 wNew = w + '@rl=NA@rt=NA'    # add missing RNN annotation
-                s = re.sub(w, wNew, s)
+                s = re.sub(re.escape(w), wNew, s)
                 addR += 1
             else:
                 pass
