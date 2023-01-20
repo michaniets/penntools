@@ -63,10 +63,13 @@ Example:
         '-m', '--merge', default = "", type = str,
         help='reads annotation (3 column) and "tmp-penntools-nodes" and merges with psd file' )
     parser.add_argument(
-        '-p', '--plaeme', action='store_true',   # store_true: no argument
+        '-p', '--plaeme', action='store_true',
         help='process PLAEME corpus with form-lemma')
     parser.add_argument(
-        '-t', '--temp', action='store_true',   # store_true: no argument
+        '-r', '--repair', action='store_true',
+        help='repair some inconsistencies in the files (e.g. lemmatisation)')
+    parser.add_argument(
+        '-t', '--temp', action='store_true',
         help='compare tag lemmma annotations in table')
     args = parser.parse_args()
     return args
@@ -85,6 +88,9 @@ def main():
     if args.merge != '':   # -m
         mergeAnnotation()
         sys.exit('mergeAnnotation finished')
+    if args.repair:   # -r
+        repair()
+        sys.exit('repair finished')
     if args.lexicon != '':   # initialise the output files
         with open(args.lexicon, 'a') as out:
             out.write("")
@@ -362,6 +368,41 @@ def tempFunction(sentences):     #  clean XML values
         wErr.write(w+'\t'+str(wordErrors[w])+'\n')
     wErr.close()
     return()
+
+# -r repair
+def repair():
+    args = get_arguments()   # get command line options
+    psdFile = read_file(args.file_name)
+    sentences = psdFile.split('\n\n')
+    sNr = 0
+    code = id = ''
+    wCount = count(0)   # counter for words
+    reWord = re.compile('\(([A-Z][^ \)]*? [^ \)]+?)\)', re.DOTALL)
+    reLGERM = re.compile('.*@l=[^@]+\w+@t=[^@]+.*')  # lemma and tag
+    reRNN = re.compile('.*\w+@lr=[^@]+\w+@tr=[^@]+.*')  # lemma and tag
+    reLGERM = re.compile('.*@l=.*@t=.*')  # lemma and tag
+    reRNN = re.compile('.*@rl=.*@rt=.*')  # lemma and tag
+    # first parse: get maximum annotation string
+    addL = 0
+    addR = 0
+    # second parse: add missing annotation @l= @t= 
+    for s in sentences:
+        sNr += 1
+        for w in re.findall(reWord, s):
+            if (not re.match(reLGERM, w)) and re.match(reRNN, w):
+                wNew = re.sub(r'@rl=', '@l=NA@t=NA@rl=', w)    # add missing lgerm annotation
+                s = re.sub(w, wNew, s)
+                addL += 1
+            elif re.match(reLGERM, w) and (not re.match(reRNN, w)):
+                wNew = w + '@rl=NA@rt=NA'    # add missing RNN annotation
+                s = re.sub(w, wNew, s)
+                addR += 1
+            else:
+                pass
+        print(s + '\n')
+    sys.stderr.write('  added annotations: LGerM=%s  RNN=%s\n' % (addL, addR) )
+    return()
+    
 
 # -------------------------------------------------------
 # don't delete the call of main

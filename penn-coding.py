@@ -215,7 +215,7 @@ def getCodings(sparsed):
 # in string, returns terminal nodes (called by getCodings)
 def getNodes(s):
     nodes=[]
-    reWord = re.compile('\((?P<node>[A-Z][^ \)]+? [^ \)]+?)\)', re.DOTALL)
+    reWord = re.compile('\((?P<node>[A-Z][^ \)]*? [^ \)]+?)\)', re.DOTALL)  # TODO verify update of this regex
     reVerb = re.compile('\((?P<node>(V|MD|EJ|AJ)[^ \)]+? [^ \)]+?)\)', re.DOTALL)  # TODO
     for w in re.findall(reWord, s):
         nodes.append(w)
