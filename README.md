@@ -1,6 +1,6 @@
 # penntools:
 
-Annotation and coding queries for Penn historical corpora.
+annotation and coding queries for Penn historical corpora.
 For results see <https://github.com/ILR-Stuttgart/mcvf-ppchf>
 
 ## penntools.py
