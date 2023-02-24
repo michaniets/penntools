@@ -67,9 +67,9 @@ Script
 
 ```corpussearch.sh mcvf-ppchf-coding.q all.psd     # coding query```
 
-```penn-coding.py -H -l rl mcvf-ppchf-coding.cod > mcvf-coding-patterns-20dez22.csv    # extract table```
+```penn-coding.py -H -l rl mcvf-ppchf-coding.cod > mcvf-coding-patterns.csv    # extract table```
 
-```rsync -zav --no-perms mcvf-ppchf/ julienas:/Library/WebServer/Documents/basics/mcvf-ppchf    # corpus as HTML```
+```rsync -zav --no-perms mcvf-ppchf/ julienas:/Library/WebServer/Documents/basics/mcvf-ppchf    # HTML on  server```
 
 
 

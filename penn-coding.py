@@ -127,7 +127,6 @@ def main(args):
       sparsed = re.sub(r'\n\n', '\n', sparsed)  # strip blank lines
       codingNodes = getCodings(sparsed)
       # for each coded IP (key = index) browse terminal nodes for CODING features and verbal nodes
-      reCoding = re.compile('CODING-(?P<ip>.*?) (?P<features>ipHead=(?P<head>.*?):.*?)')
       reLem = re.compile(r'(.*?)@' + lCode + '=([^@]+)') # lemma in annotation
       for key in sorted(codingNodes.keys()):   # for all coding node IPs
         beginLine = len(re.findall(r'\n', sparsed[1:key], re.DOTALL)) + 1 # get line number for this CODING
