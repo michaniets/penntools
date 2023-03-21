@@ -160,6 +160,8 @@ attributes of the CorpusSearch query:
 
 **Latest:**
 
+Version 1.4 24.12.22: bug fix: if two full verbs are in a coding node, the infinite verb (VA.*) is ignored
+
 Version 1.1 24.12.22: parsing based on parentheses (instead of indentation):
 
 Coding query:

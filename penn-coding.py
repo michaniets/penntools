@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
 __author__ = "Achim Stein"
-__version__ = "1.3"
+__version__ = "1.4"
 __email__ = "achim.stein@ling.uni-stuttgart.de"
-__status__ = "13.1.23"
+__status__ = "21.3.23"
 __license__ = "GPL"
 
 import sys
@@ -50,8 +50,8 @@ htmlSource = '''
 <font color="red">
 <a href="https://www.ling.upenn.edu/hist-corpora/other-corpora.html">Penn Historical Corpora</a>.<br>
 Depending on the corpus, license restrictions may apply when re-using the data.<br>
-Coding and HTML conversion by A. Stein (University of Stutgart)<br>
-&nbsp;&nbsp;French lemmatization by A. Stein (University of Stutgart) using RNN (Schmid 2019; LMU München) and BFM training data (A. Lavrentev, IHRIM, ENS de Lyon)<br>
+Coding and HTML conversion by A. Stein (University of Stuttgart)<br>
+&nbsp;&nbsp;French lemmatization by A. Stein (University of Stuttgart) using RNN (Schmid 2019; LMU München) and BFM training data (A. Lavrentev, IHRIM, ENS de Lyon)<br>
 &nbsp;&nbsp;English lemmatization by BASICS/SILPAC project members (University of Mannheim)<br>
 %s %s (%s)<br>
 <a href="index.html">List of files</a>
@@ -206,6 +206,10 @@ def getCodings(sparsed):
         s = sparsed[beg:end]  # only the coding structure
         del codPairs[beg]   # remove this pair
         nodes = getNodes(s)   # get list of terminal nodes for this coding
+        nodeString = '>'.join(nodes)
+        # v1.4: if nodes contain inflected AND infinite full Verb, drop infinite
+        if re.search(r">VB.*>VA.*", nodeString):
+            nodes = [i for i in nodes if not re.compile('VA.*').match(i)]
         codingNodes[beg] = nodes
         sDel = re.sub(r'.', 'X', s)   # replace processed coding segments
         sparsed = sparsed.replace(s, sDel)
