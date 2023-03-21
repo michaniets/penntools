@@ -208,7 +208,7 @@ def getCodings(sparsed):
         nodes = getNodes(s)   # get list of terminal nodes for this coding
         nodeString = '>'.join(nodes)
         # v1.4: if nodes contain inflected AND infinite full Verb, drop infinite
-        if re.search(r">VB.*>VA.*", nodeString):
+        if re.search(r"(>VB.*>VA.*|>VA.*>VB.*)", nodeString):
             nodes = [i for i in nodes if not re.compile('VA.*').match(i)]
         codingNodes[beg] = nodes
         sDel = re.sub(r'.', 'X', s)   # replace processed coding segments
