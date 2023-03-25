@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
 __author__ = "Achim Stein"
-__version__ = "1.4"
+__version__ = "1.5"
 __email__ = "achim.stein@ling.uni-stuttgart.de"
-__status__ = "21.3.23"
+__status__ = "25.3.23"
 __license__ = "GPL"
 
 import sys
@@ -89,7 +89,8 @@ def main(args):
       reCoordPOS='V.*',   # TODO setting it here doesn't seem to work. Use -c
     elif re.search(r'(pceec)', corpusName, re.IGNORECASE):
       htmlDir = "pceec"
-      reVerbPOS = '^(VB|MD|DA|DO|HA|HV).*'
+#      reVerbPOS = '^(VB|MD|DA|DO|HA|HV).*'
+      reVerbPOS = '^(NEG\+)?(VA|VB|MD|DA|DO|HA|HV|BE).*'
       reCoordPOS='V.*',
     elif re.search(r'(mcvf)', corpusName, re.IGNORECASE):
       htmlDir = "mcvf-ppchf"
@@ -171,7 +172,7 @@ def main(args):
   sys.stderr.write(str(rowNr) + ' lines written\n')
   if args.html:
     sys.stderr.write('HTML files written to folder %s \n' % htmlDir)
-    sys.stderr.write('Hint: Update HTML files on remote or local server:\n    rsync -zav --no-perms %s/ %s:/Library/WebServer/Documents/basics/%s\n    rsync -zav --no-perms %s/ /Library/WebServer/Documents/%s\n' % (htmlDir, htmlServer, htmlDir, htmlDir, htmlDir))
+    sys.stderr.write('Hint: Update HTML files on remote or local server:\n    rsync -zav --no-perms %s/ 141.58.164.21:/Library/WebServer/Documents/basics/%s\n    rsync -zav --no-perms %s/ /Library/WebServer/Documents/%s\n' % (htmlDir, htmlDir, htmlDir, htmlDir))
 
 
   if errorNr > 0:
@@ -248,9 +249,14 @@ def hitsInList(str, lst):
 # file names for HTML output, with increments to avoid huge files
 def openHTML(id, suffix, sprint, sparsed, control):
   global lastFile   # use global var in this function
-  htmlFile = re.sub(r'[\.,].*', '', id)
+  id = re.sub(r'\?', '', id)  # delete question marks in PCEEC id
+  if re.search(r'period=.*,year=.*', id):  # if this is an ID of PCEEC
+    htmlFile = re.sub(r'.*year=', '', id)
+    htmlFile = re.sub(r'\..*', '', id)
+  else:
+    htmlFile = re.sub(r'[\.,].*', '', id)
   if htmlFile == '':
-    sys.exit('no file' + id)
+    sys.exit('no file (variable htmlFile cannot be empty)' + id)
   if htmlFile in suffix.keys():
     suffix[htmlFile] += 1
   else:
