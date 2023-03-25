@@ -160,7 +160,12 @@ attributes of the CorpusSearch query:
 
 **Latest:**
 
-Version 1.4 24.12.22: bug fix: if two full verbs are in a coding node, the infinite verb (VA.*) is ignored
+Version 1.5 25.3.23:
+- penntools.py now has a function for processing the lemmas annotated by TreeTagger (for PCEEC)
+- penn-coding.py improved for processing PCEEC files
+
+
+Version 1.4 14.3.23: bug fix: if two full verbs are in a coding node, the infinite verb (VA.*) is ignored
 
 Version 1.1 24.12.22: parsing based on parentheses (instead of indentation):
 
