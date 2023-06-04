@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
 __author__ = "Achim Stein"
-__version__ = "1.5"
+__version__ = "1.6"
 __email__ = "achim.stein@ling.uni-stuttgart.de"
-__status__ = "25.3.23"
+__status__ = "3.6.23"
 __license__ = "GPL"
 
 import sys
@@ -141,12 +141,15 @@ def main(args):
         nodes = codingNodes[key]   # list of terminal nodes under coding IP
         # set coord to > 0 if more than one verbal (modal) node
         coord = hitsInList(str(reCoordPOS), nodes) - 1   # histInList takes string (not re)
-        # for all terminal nodes 
+        # for all terminal nodes
+        debug("======== NODES: "+ str(nodes))
         for n in nodes:   
+          #debug("    ------ THIS NODE: "+ n)
           pos, form = n.split(' ')    # original Penn pos and form
+          # process the CODING annotation
           if re.search(r'CODING-(.*)', pos):   # get the features from the CODING node
             ipType = re.search(r'CODING-(.*)', pos).group(1)
-            debug(' >------- features: ' +str(key) + ': ' + form)
+            #debug(' >------- features: ' +str(key) + ': ' + form)
             if not headerPrinted:      # define the column header, if not present
               print(makeFeatureHeader(form))  # form are attribute:value pairs of CODING
               headerPrinted = True
@@ -154,6 +157,8 @@ def main(args):
               val = re.sub(r'.*=', '', f)
               addFeatures.append(val)
             continue
+          # process verbs under this CODING IP
+          # - v1.6 stop after first lexical verb (pos = V.*) is found
           if re.search(reVerbPOS, pos):   # get lexical info from these verbal nodes
             vpos = re.sub(r'[-=]\d+', '', pos)   # strip indices
             vlemma = 'NA'
@@ -164,6 +169,7 @@ def main(args):
               vform = re.sub(r'@.*', '', form)
             featRow = [pid, url, url2, ipType, vpos, vform, vlemma, str(coord)] + addFeatures
             rowNr+=1
+            debug("Lemma: "+vlemma)
             print('%s\t%s' % (str(rowNr), '\t'.join(featRow)))
     # print sentence as HTML
     if args.html:
@@ -190,23 +196,32 @@ def main(args):
 
 # for all IP with CODING, returns dict of indexes of enclosing ( )
 def getCodings(sparsed):
+    verbNestLevel = {}
+    codingNodes = {}
+    nodes = []
     pairs = findParens(sparsed)  # pairs of matching ( )
+    # pairs of bracket for CODING
     codPairs = {}
-    reCode = re.compile('\(IP[^ ]*? \(CODING', re.DOTALL)  #
+    reCode = re.compile('\(IP[^ ]*? \(CODING', re.DOTALL)
     for ip in re.finditer(reCode, sparsed):
         beg = ip.start()
         end = pairs[ip.start()]
         debug(' index range of CODING IP: %s-%s %s ' % (beg, end, ip.group()))
         codPairs[beg] = end    # pairs of matching ( ) of IPs with coding
     # loop through coded IPs, most embedded one first (i.e. with lower end index)
-    codingNodes = {}
-    nodes = []
     while codPairs:
         beg = min(codPairs, key=codPairs.get)
         end = codPairs[beg]
         s = sparsed[beg:end]  # only the coding structure
         del codPairs[beg]   # remove this pair
-        nodes = getNodes(s)   # get list of terminal nodes for this coding
+#        nodes = getNodes(s)   # get list of terminal nodes for this coding
+        nodes=[]
+        reWord = re.compile('\((?P<node>[A-Z][^ \)]*? [^ \)]+?)\)', re.DOTALL)  # TODO verify update of this regex
+        #reVerb = re.compile('\((?P<node>(V|MD|EJ|AJ)[^ \)]+? [^ \)]+?)\)', re.DOTALL)  #  NOT USED?
+        for w in re.findall(reWord, s):
+            nodes.append(w)
+        # if >1 lexical verbs: remove the deeper nested verbs from list
+        nodes = removeNestedVerbs(nodes, s)
         nodeString = '>'.join(nodes)
         # v1.4: if nodes contain inflected AND infinite full Verb, drop infinite
         if re.search(r"(>VB.*>VA.*|>VA.*>VB.*)", nodeString):
@@ -217,13 +232,36 @@ def getCodings(sparsed):
     return(codingNodes)
 
 # in string, returns terminal nodes (called by getCodings)
-def getNodes(s):
-    nodes=[]
-    reWord = re.compile('\((?P<node>[A-Z][^ \)]*? [^ \)]+?)\)', re.DOTALL)  # TODO verify update of this regex
-    reVerb = re.compile('\((?P<node>(V|MD|EJ|AJ)[^ \)]+? [^ \)]+?)\)', re.DOTALL)  # TODO
-    for w in re.findall(reWord, s):
-        nodes.append(w)
-    return(nodes)
+def removeNestedVerbs(nodes, s):
+        nested = 9999  # initialize depth of nesting
+        vNR = 0
+        lastNode = ''
+        for n in nodes:
+            if re.search(r'^V.*', n):
+                vNR += 1
+                vbegin = s.find(n)
+                thisNested = s[1:vbegin].count('(') - s[1:vbegin].count(')')
+                debug('   >> CHECK NODE: ' + n + '  begin=' + str(vbegin))
+                debug('      >> NESTED: ' + str(nested) + 'last='+lastNode + ' ---- thisNested=' + str(thisNested))
+                if vNR == 1:
+                    nested = thisNested
+                    lastNode = n
+                else:
+                    if thisNested >= nested:
+                        try:
+                            nodes.remove(n)  #del nodes[n]
+                            debug('Removed ' + n)
+                        except ValueError:
+                            pass
+                    else:
+                        try:
+                            nodes.remove(lastNode)  #del nodes[n]
+                            debug('Removed ' + lastNode)
+                        except ValueError:
+                            pass
+                        lastNode = n
+                        nested = thisNested
+        return(nodes)
 
 # in string, finds matching ( ), returns dict of  begin:end  positions
 def findParens(s):
