@@ -80,7 +80,7 @@ Example:
         '-t', '--temp', action='store_true',
         help='compare tag lemma annotations in table')
     parser.add_argument(
-        '--triples', default = ".*", type = str,
+        '--triples', default = "", type = str,
         help='write a file with tag triples or word_tag triples if tag matches argument')
 
     args = parser.parse_args()
@@ -172,7 +172,7 @@ def main():
             word = re.sub(r'<slash>', '/', word)
             if not re.match(r'(NPR|NUM)', tag):
                 word = word.lower()   # lines without lower:  99077 me-fullex
-            tag = processTag(tag)
+            tag = processTag(tag, args)
             lemma = ''
             lemmaCode = 'l'
             if args.lemma_code:
@@ -698,9 +698,10 @@ def addToLex(word, tag, lemma, wNr, conllNr):     #  process tags
                 jointLex[word].append( {tag: [lemma]} )  # new tag: append dict tag: list of lemmas
     return()
 
-def processTag(value):     #  process tags
+def processTag(value, args):     #  process tags
     value = re.sub(r'[0-9].*', '', value)   #  VB21
-    value = re.sub(r'\+.*', '', value)
+    if args.triples == '':   # keep e.g. NEG+MD for triple analysis
+        value = re.sub(r'\+.*', '', value)
     value = re.sub(r'-.*?', '', value)
     value = re.sub(r' ', '', value)  # some bugs in PCMEP
     #value = re.sub(r'\$', '', value)     # $ marks possessives (genitives)
