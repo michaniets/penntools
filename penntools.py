@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 __author__ = "Achim Stein"
-__version__ = "1.5"
+__version__ = "1.7"
 __email__ = "achim.stein@ling.uni-stuttgart.de"
-__status__ = "25.3.23"
+__status__ = "31.12.23"
 __license__ = "GPL"
 
 import sys
@@ -24,6 +24,7 @@ import unicodedata
 jointLex = defaultdict(str)   # option -l   Lexicon for TreeTagger training
 openclass = defaultdict(str)   # openclass list
 lemmaCode = 'l'     # default lemma markup in psd file, for @l=
+triple = []
 
 def get_arguments():
     parser = argparse.ArgumentParser(
@@ -55,11 +56,11 @@ Example:
         "file_name",
         help = "input data, table with tab delimiters")
     parser.add_argument(
-        '-c', '--columns', default = 3, type = int,
+        '-c', '--columns', default = 3, type = str,
         help='output columns: 1 2 3')
     parser.add_argument(
         '-l', '--lexicon', default = "", type = str,
-        help='write lexicon to file (TreeTagger format')
+        help='write lexicon to file (TreeTagger format)')
     parser.add_argument(
         '-L', '--lemma_code', default = "l", type = str,
         help='define the code used for lemmas in psd annotation (e.g. "l" for @l=')
@@ -77,7 +78,11 @@ Example:
         help='repair some inconsistencies in the files (e.g. lemmatisation)')
     parser.add_argument(
         '-t', '--temp', action='store_true',
-        help='compare tag lemmma annotations in table')
+        help='compare tag lemma annotations in table')
+    parser.add_argument(
+        '--triples', default = ".*", type = str,
+        help='write a file with tag triples or word_tag triples if tag matches argument')
+
     args = parser.parse_args()
     return args
 
@@ -113,15 +118,22 @@ def main():
     tmp = open('tmp-penntools-' + args.file_name, 'w')   # copy of psd with numbered terminal nodes (words)
     nodes = open('tmp-penntools-nodes', 'w')   # store node numbers of terminal nodes
     tagme = open('tmp-penntools-tagme', 'w')   # store the words to be tagged - parrallel to node numbers
+    if args.triples != '':                    # option --triples
+        tripleFile = open('tmp-penntools-triples', 'w')   # store the words to be tagged - parrallel to node numbers
+        reTripleTag = re.compile(args.triples)
+        triplet_counts = {}
     print('<text file="' + cleanXML(args.file_name) + '">')
     content = read_file(args.file_name)
     sentences = content.split('\n\n')
     sNr = 0
+    conllNr = 0  # word numbering for CoNLL
     code = id = ''
     inCorpus = False
     wCount = count(0)   # counter for words
     for s in sentences:
+        triple = [] # option --triples
         sNr += 1
+        conllNr = 0  # reset
         if sNr % 100 == 0:  # display progress
             percent = int(sNr / len(sentences) * 100)
             sys.stderr.write(" processed: " + str(percent) + '%' + '\r')
@@ -142,16 +154,20 @@ def main():
             continue
         elif (not re.search(r'\(ID ([^\)\(]+)\)', s)):
             if inCorpus:  # if processing has started
-                sys.stderr.write(">>>>> ID not found in record " + str(sNr) + " of file " + args.file_name + '\n' + s)
-                sys.exit("Error")
+                sys.stderr.write(">>>>> WARNING: ID not found in record " + str(sNr) + " of file " + args.file_name + '\n' + s)
+                #sys.exit("Error")
         # sentences: get ID 
         else:
             matches = re.search(r'\(ID ([^\)\(]+)\)', s)
             id = matches.group(1)
             inCorpus = True
         # process terminal nodes in copy with terminal numbers
-        print('<s id="' + id + '">', sep='')
+        if args.columns == "c":
+            print('#%s ' % id)
+        else:
+            print('<s id="' + id + '">', sep='')
         for (terminal, tag, word, wNr) in re.findall(rePennWordNum, sNum):
+            conllNr += 1
             word = re.sub(r'\$', '', word)
             word = re.sub(r'<slash>', '/', word)
             if not re.match(r'(NPR|NUM)', tag):
@@ -163,10 +179,11 @@ def main():
                 lemmaCode = args.lemma_code
             reLemma = re.compile('@' + lemmaCode + '=')
             if re.match(r'ID', tag) or re.match(r'\*|0', word):
-                print('<div ignore="' + cleanXML(word) + '"/>', sep='')
-            elif re.match(r'LINEBREAK', tag):  # in PLAEME: line breaks
+                if not args.columns == "c":
+                    print('<div ignore="' + cleanXML(word) + '"/>', sep='')
+            elif re.match(r'LINEBREAK', tag) and not args.columns == "c":  # in PLAEME: line breaks
                 print('<div code="LINEBREAK"/>')
-            elif re.match(r'CNJCTR', tag):  # in PLAEME: contracted forms
+            elif re.match(r'CNJCTR', tag) and not args.columns == "c":  # in PLAEME: contracted forms
                 print('<div code="CNJCTR"/>')
             elif re.search(reLemma, word):   # if lemma annotation exists
                 (word, lemma) = processLemma(word, lemmaCode)
@@ -174,7 +191,7 @@ def main():
                     m = re.search(r'(.*?)-(.*)', word)
                     word = m.group(1)
                     # lemma = lemma + "@p=" + m.group(2)    # don't add the lemma if we have a @l= lemma
-                addToLex(word, tag, lemma, wNr)
+                addToLex(word, tag, lemma, wNr, conllNr)
                 if not re.search(r'[<{]', word):
                     tagme.write('%s\n' % word)
                     nodes.write('%s\t%s\n' % (wNr, word))
@@ -184,11 +201,34 @@ def main():
                     m = re.search(r'(.*?)-(.*)', word)
                     word = m.group(1)
                     lemma = "@p=" + m.group(2)
-                addToLex(word, tag, lemma, wNr)
+                if not(args.columns == "c" and tag == "CODE"):
+                    addToLex(word, tag, lemma, wNr, conllNr)
                 # for Tagging, write only pure words (no codes)
                 if not re.search(r'[<{]', word):
                     tagme.write('%s\n' % word)
                     nodes.write('%s\t%s\n' % (wNr, word))
+            # store info for triplet list if word is not empty or a code
+            if args.triples and not (re.match(r'ID', tag) or re.match(r'\*|0', word)):
+                triple.append(f'{word}\t{tag}')
+                if len(triple) > 3:
+                    triple.pop(0)
+                # keep only triples with MD in the middle
+                if len(triple) == 3 and re.search(reTripleTag, triple[1]):
+                    #period = re.sub(r'_.*', '', args.file_name)
+                    textID = re.sub(r',.*', '', id)
+                    triple.append(textID)
+                    printTriple = '\t'.join(triple)
+                    tripleFile.write(printTriple + '\n')
+                    countTriple = '___'.join(triple) # tuple(triple)
+                    # increment and avoid KeyError by setting to default 0
+                    triplet_counts[countTriple] = triplet_counts.setdefault(countTriple, 0) + 1  # Increment the count
+
+    # write triples       
+    if args.triples:
+        for triplet in triplet_counts.keys():
+            splitTriplet = re.sub('___', '\t', triplet)
+#            tripleFile.write(f"{triplet_counts[triplet]}\t{splitTriplet}\n")
+
         nodes.write('\n')    # node list needs an empty line
         tagme.write('\n')    # tagme list needs an empty line
         print('</s>\n')      # sentences need to be separated by empty line for RNN tagger
@@ -624,7 +664,7 @@ def writeLexicon():
     quit()
 
 # write lexicon file (-l) and one-word-per-line file (stdout)
-def addToLex(word, tag, lemma, wNr):     #  process tags
+def addToLex(word, tag, lemma, wNr, conllNr):     #  process tags
     args = get_arguments()   # get command line options
     if word == "" or tag == "" or lemma == "":
         sys.stderr.write(">>>>> addToLex WARNING: skipping incomplete line: word,tag,lemma = " + ','.join([word, tag, lemma]) + "wNr="+wNr+'\n')
@@ -634,6 +674,8 @@ def addToLex(word, tag, lemma, wNr):     #  process tags
             print(word)
         elif args.columns == 2:
             print(word, tag, sep="\t")
+        elif args.columns == "c":  # CoNLL-U
+            print("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (conllNr, word, "_", "_", tag, "_", "0", "root", "_", wNr))
         else:
             print(word, tag, lemma, sep="\t")
         if re.match('^(ADJ|ADV|V|N.*|NUM|VB|VB[A-Z])', tag):
@@ -745,7 +787,6 @@ def tempFunction(sentences):     #  clean XML values
     sys.stderr.write('x=============== writing word errors\n')
     wErr.write('word_PennTag'+'\t'+ 'Freq' +'\n')
     for w in sorted(wordErrors.keys()):
-#        if wordErrors[w] > 10:
         wErr.write(w+'\t'+str(wordErrors[w])+'\n')
     wErr.close()
     return()
