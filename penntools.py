@@ -210,6 +210,8 @@ def main():
                     nodes.write('%s\t%s\n' % (wNr, word))
             # store info for triplet list if word is not empty or a code
             if args.triples and not (re.match(r'(ID|LB|CODE|LINEBREAK)', tag) or re.match(r'\*|0', word)):
+                if args.plaeme:
+                    word = re.sub(r"-.*", "", word)   # strip lemma
                 triple.append(f'{word}\t{tag}')
                 if len(triple) > 3:
                     triple.pop(0)
