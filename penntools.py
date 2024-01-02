@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 __author__ = "Achim Stein"
-__version__ = "1.7"
+__version__ = "1.8"
 __email__ = "achim.stein@ling.uni-stuttgart.de"
-__status__ = "31.12.23"
+__status__ = "2.1.23"
 __license__ = "GPL"
 
 import sys
@@ -24,7 +24,6 @@ import unicodedata
 jointLex = defaultdict(str)   # option -l   Lexicon for TreeTagger training
 openclass = defaultdict(str)   # openclass list
 lemmaCode = 'l'     # default lemma markup in psd file, for @l=
-triple = []
 
 def get_arguments():
     parser = argparse.ArgumentParser(
@@ -130,8 +129,10 @@ def main():
     code = id = ''
     inCorpus = False
     wCount = count(0)   # counter for words
+    allTriplets = [] # for option --triples
     for s in sentences:
-        triple = [] # option --triples
+        triple = []
+        printTriple = []
         sNr += 1
         conllNr = 0  # reset
         if sNr % 100 == 0:  # display progress
@@ -208,23 +209,26 @@ def main():
                     tagme.write('%s\n' % word)
                     nodes.write('%s\t%s\n' % (wNr, word))
             # store info for triplet list if word is not empty or a code
-            if args.triples and not (re.match(r'ID', tag) or re.match(r'\*|0', word)):
+            if args.triples and not (re.match(r'(ID|LB|CODE|LINEBREAK)', tag) or re.match(r'\*|0', word)):
                 triple.append(f'{word}\t{tag}')
                 if len(triple) > 3:
                     triple.pop(0)
                 # keep only triples with MD in the middle
                 if len(triple) == 3 and re.search(reTripleTag, triple[1]):
-                    #period = re.sub(r'_.*', '', args.file_name)
+                    period = re.sub(r'_.*', '', args.file_name)
                     textID = re.sub(r',.*', '', id)
-                    triple.append(textID)
-                    printTriple = '\t'.join(triple)
-                    tripleFile.write(printTriple + '\n')
+                    printTriple = list(triple)
+                    printTriple.append(textID)
+                    printTriple = '\t'.join(printTriple)
+                    allTriplets.append(printTriple)
                     countTriple = '___'.join(triple) # tuple(triple)
                     # increment and avoid KeyError by setting to default 0
                     triplet_counts[countTriple] = triplet_counts.setdefault(countTriple, 0) + 1  # Increment the count
 
-    # write triples       
+    # write triple frequencies       
     if args.triples:
+        for t in allTriplets:
+            tripleFile.write(t + '\n')
         for triplet in triplet_counts.keys():
             splitTriplet = re.sub('___', '\t', triplet)
 #            tripleFile.write(f"{triplet_counts[triplet]}\t{splitTriplet}\n")

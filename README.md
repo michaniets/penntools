@@ -160,10 +160,21 @@ attributes of the CorpusSearch query:
 
 **Latest:**
 
+Version 1.6 5.6.23:
+- bug fix: lemma selection in parse tree had retrieved wrong lemmas
+  when more than one lexical verb (pos V.*) was governed by the IP. As
+  a result, the etymological information and other features retrieved
+  by CorpusSearch coding did not match the verb lemma selected by this
+  script. The script now selects the lemma of the least deeply
+  embedded lexical verb.  This eliminates many errors.  Some remain
+  when 2 lexical verbs have the same depth of embedding, (a)
+  auxiliaries that are annotated as V, e.g. _beyngge_/VAG
+  _astonyed_/VAN, or _y-damned_/VAN _wor+t_/VBP and (b) enumerations
+  of verbs.  Both cases are rare.
+
 Version 1.5 25.3.23:
 - penntools.py now has a function for processing the lemmas annotated by TreeTagger (for PCEEC)
 - penn-coding.py improved for processing PCEEC files
-
 
 Version 1.4 14.3.23: bug fix: if two full verbs are in a coding node, the infinite verb (VA.*) is ignored
 
