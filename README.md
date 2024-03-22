@@ -211,6 +211,18 @@ Corpus selection 'me' sets retrieved verbs to:
 
 **Next:**
 
+Improvements / Bugs:
+
+- iobj=clit (and other pro values) is matched when the pronoun is a demonstrative
+This needs to be changed: demonstratives should be 'pro', clitics 'clit...'
+
+```
+....(NP-DTV (DAT á)
+6........(PRO ces)
+7........(PP (P de)
+8..........(NP (NPRS Jabes) (NPRS Galáád))))
+```
+
 Functions:
 
 - include alternative Lemmas
