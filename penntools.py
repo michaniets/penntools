@@ -114,11 +114,13 @@ def main():
         sentences = content.split('\n')
         tempFunction(sentences)
         quit()
-    tmp = open('tmp-penntools-' + args.file_name, 'w')   # copy of psd with numbered terminal nodes (words)
+    fileName = re.sub(r'.*/', '', args.file_name)  # strip path
+    tmp = open('tmp-penntools-' + fileName, 'w')   # copy of psd with numbered terminal nodes (words)
     nodes = open('tmp-penntools-nodes', 'w')   # store node numbers of terminal nodes
     tagme = open('tmp-penntools-tagme', 'w')   # store the words to be tagged - parrallel to node numbers
     if args.triples != '':                    # option --triples
-        tripleFile = open('tmp-penntools-triples', 'w')   # store the words to be tagged - parrallel to node numbers
+        fileName = re.sub(r'\.psd', '.csv', fileName)
+        tripleFile = open(f"triples-{fileName}", 'w')   # store the words to be tagged - parrallel to node numbers
         reTripleTag = re.compile(args.triples)
         triplet_counts = {}
     print('<text file="' + cleanXML(args.file_name) + '">')
@@ -211,16 +213,24 @@ def main():
             # store info for triplet list if word is not empty or a code
             if args.triples and not (re.match(r'(ID|LB|CODE|LINEBREAK)', tag) or re.match(r'\*|0', word)):
                 if args.plaeme:
-                    word = re.sub(r"-.*", "", word)   # strip lemma
-                triple.append(f'{word}\t{tag}')
+                    word = re.sub(r"-.*", "", word)   # strip PLAEME lemma
+                lemmaStr = lemma
+                if lemma == '':
+                    lemma = '0'
+                else:
+                    lemmaStr = re.sub(r'@m=.*', '', lemma)
+                triple.append(f'{word}\t{tag}')   # use lemmaStr or word, as needed
                 if len(triple) > 3:
                     triple.pop(0)
-                # keep only triples with MD in the middle
+                # ---> uncomment or adapt the condition for triple selection
+                # a) keep only triples with MD in the middle
                 if len(triple) == 3 and re.search(reTripleTag, triple[1]):
-                    period = re.sub(r'_.*', '', args.file_name)
+                # b) keep only triples with modal lemma in the middle
+                # if len(triple) == 3 and re.search(reTripleTag, triple[1]) and re.search(r'^(willen|shulen|connen|mouen|moten|durren)', triple[1]):
+                    period = re.sub(r'.*([mM]\d+).*', '\\1', args.file_name)
                     textID = re.sub(r',.*', '', id)
                     printTriple = list(triple)
-                    printTriple.append(textID)
+                    printTriple.append(f"{textID}\t{period}")
                     printTriple = '\t'.join(printTriple)
                     allTriplets.append(printTriple)
                     countTriple = '___'.join(triple) # tuple(triple)
