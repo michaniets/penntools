@@ -3,7 +3,7 @@
 __author__ = "Achim Stein"
 __version__ = "1.6"
 __email__ = "achim.stein@ling.uni-stuttgart.de"
-__status__ = "3.6.23"
+__status__ = "21.6.24"
 __license__ = "GPL"
 
 import sys
@@ -18,7 +18,7 @@ from itertools import count
 #import csv
 
 # global variables
-htmlServer = "http://141.58.164.21/basics"  # julienas (IP Nr reduces table file size)
+htmlServer = "https://141.58.164.21/basics"  # julienas (IP to reduce file size). June24-: https
 lastFile = ''  # HTML text file
 logFile = 'penn-coding.log'   # not used in this version
 htmlHead = '''<!DOCTYPE html>
