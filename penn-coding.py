@@ -3,7 +3,7 @@
 __author__ = "Achim Stein"
 __version__ = "1.6"
 __email__ = "achim.stein@ling.uni-stuttgart.de"
-__status__ = "21.6.24"
+__status__ = "13.1.25"
 __license__ = "GPL"
 
 import sys
@@ -89,6 +89,11 @@ def main(args):
       reCoordPOS='V.*',   # TODO setting it here doesn't seem to work. Use -c
     elif re.search(r'(pceec)', corpusName, re.IGNORECASE):
       htmlDir = "pceec"
+#      reVerbPOS = '^(VB|MD|DA|DO|HA|HV).*'
+      reVerbPOS = '^(NEG\+)?(VA|VB|MD|DA|DO|HA|HV|BE).*'
+      reCoordPOS='V.*',
+    elif re.search(r'(ppceme)', corpusName, re.IGNORECASE):
+      htmlDir = "ppceme"
 #      reVerbPOS = '^(VB|MD|DA|DO|HA|HV).*'
       reVerbPOS = '^(NEG\+)?(VA|VB|MD|DA|DO|HA|HV|BE).*'
       reCoordPOS='V.*',
